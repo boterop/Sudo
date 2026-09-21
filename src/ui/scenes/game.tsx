@@ -1,10 +1,11 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../AppNavigator';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { Game } from '../../domain/entity';
 import { createGame } from '../../domain/service';
 import { DrawBoard, NumbersButtons } from '../components';
+import { Board } from '../../domain/valueobject';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 
@@ -12,26 +13,28 @@ export const GameScreen = ({ route }: Props) => {
   const { difficulty } = route.params;
 
   const [game, setGame] = useState<Game | null>(null);
-  const [selectedCell, setSelectedCell] = useState<number[]>();
+  const [selectedCell, setSelectedCell] = useState<number[] | null>(null);
+  const [originalBoard, setOriginalBoard] = useState<Board>();
 
   useEffect(() => {
-    setGame(createGame(difficulty));
+    const g = createGame(difficulty);
+    setGame(g);
+    setOriginalBoard(g.board.map(row => [...row]));
   }, [difficulty]);
 
-  const selectCell = useCallback((number: number) => {
-    setSelectedCell([number]);
+  const selectCell = useCallback((cell: number[]) => {
+    setSelectedCell(cell);
   }, []);
 
   const pressNumber = useCallback(
     (number: number) => {
+      if (!game || !selectedCell) return;
       const row = selectedCell![0];
       const col = selectedCell![1];
 
-      if (!game || !row || !col) {
-        return;
-      }
-
-      game.board[row][col] = number;
+      const board = game.board.map(r => [...r]);
+      board[row][col] = number;
+      setGame({ ...game, board });
     },
     [selectedCell, game],
   );
@@ -39,11 +42,15 @@ export const GameScreen = ({ route }: Props) => {
   return (
     <View style={styles.container}>
       {!game && <Text>Creating {difficulty} game...</Text>}
-      {game && (
-        <>
-          <DrawBoard board={game.board} onPress={selectCell} />
+      {game && originalBoard && (
+        <View style={styles.game}>
+          <DrawBoard
+            board={game.board}
+            originalBoard={originalBoard}
+            onPress={selectCell}
+          />
           <NumbersButtons onPress={pressNumber} />
-        </>
+        </View>
       )}
     </View>
   );
@@ -56,5 +63,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  game: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
   },
 });

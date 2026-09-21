@@ -10,7 +10,7 @@ export const DifficultyButton = ({
 }) => {
   return (
     <TouchableOpacity style={styles.button} onPress={() => onPress(difficulty)}>
-      <Text style={styles.Text}>{difficulty}</Text>
+      <Text style={styles.text}>{difficulty}</Text>
     </TouchableOpacity>
   );
 };
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  Text: {
+  text: {
     fontSize: 24,
     fontWeight: 'bold',
   },

@@ -1,10 +1,4 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export const NumbersButtons = ({
   onPress,
@@ -18,7 +12,7 @@ export const NumbersButtons = ({
     for (let number of numbers) {
       const button = (
         <TouchableOpacity style={styles.button} onPress={() => onPress(number)}>
-          <Text style={styles.Text}>{number}</Text>
+          <Text style={styles.text}>{number}</Text>
         </TouchableOpacity>
       );
 
@@ -49,7 +43,7 @@ const styles = StyleSheet.create({
 
     elevation: 5,
   },
-  Text: {
+  text: {
     fontSize: 18,
     fontWeight: '600',
   },
