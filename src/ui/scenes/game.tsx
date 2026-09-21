@@ -1,6 +1,13 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../AppNavigator';
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { Game } from '../../domain/entity';
 import { createGame } from '../../domain/service';
@@ -15,6 +22,7 @@ export const GameScreen = ({ route }: Props) => {
   const [game, setGame] = useState<Game | null>(null);
   const [selectedCell, setSelectedCell] = useState<number[] | null>(null);
   const [originalBoard, setOriginalBoard] = useState<Board>();
+  const [verifying, setVerifying] = useState(false);
 
   const startNewGame = useCallback(() => {
     setTimeout(() => {
@@ -82,8 +90,20 @@ export const GameScreen = ({ route }: Props) => {
           <DrawBoard
             board={game.board}
             originalBoard={originalBoard}
+            solution={game.solution}
+            verifying={verifying}
             onPress={selectCell}
           />
+          <View style={styles.row}>
+            <TouchableOpacity
+              onPress={() => {
+                setVerifying(true);
+                setTimeout(() => setVerifying(false), 3000);
+              }}
+            >
+              <Text style={styles.verifyButton}>Verify</Text>
+            </TouchableOpacity>
+          </View>
           <NumbersButtons onPress={pressNumber} />
         </View>
       )}
@@ -99,11 +119,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  game: {
-    flex: 1,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
     width: '100%',
-    height: '100%',
+  },
+  game: {
+    width: '100%',
+    height: '80%',
     alignItems: 'center',
     justifyContent: 'space-evenly',
+  },
+  verifyButton: {
+    backgroundColor: '#DEDCF7',
+    padding: 8,
+    borderRadius: 8,
+    fontSize: 16,
   },
 });

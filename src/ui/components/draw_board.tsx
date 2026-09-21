@@ -5,10 +5,14 @@ import { useState } from 'react';
 export const DrawBoard = ({
   board,
   originalBoard,
+  solution,
+  verifying,
   onPress,
 }: {
   board: Board;
   originalBoard: Board;
+  solution: Board;
+  verifying: boolean;
   onPress: (number: number[]) => void;
 }) => {
   const [selectedCell, setSelectedCell] = useState<number[] | null>(null);
@@ -29,6 +33,11 @@ export const DrawBoard = ({
     }
     if (originalBoard[row][col] !== 0) {
       styleList.push(styles.original);
+    }
+    if (verifying) {
+      if (solution[row][col] !== board[row][col] && board[row][col] !== 0) {
+        styleList.push(styles.wrong);
+      }
     }
 
     return styleList;
@@ -112,5 +121,8 @@ const styles = StyleSheet.create({
   },
   bold: {
     fontWeight: '600',
+  },
+  wrong: {
+    backgroundColor: '#FF0000',
   },
 });
