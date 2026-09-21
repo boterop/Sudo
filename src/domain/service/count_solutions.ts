@@ -5,7 +5,7 @@ import { isValid } from './validate_game';
 export const countSolutions = (board: Board): number => {
   let solutions = 0;
 
-  function search(): void {
+  const search = (): void => {
     if (solutions > 1) {
       return;
     }
@@ -37,7 +37,7 @@ export const countSolutions = (board: Board): number => {
     }
 
     solutions++;
-  }
+  };
 
   search();
 
