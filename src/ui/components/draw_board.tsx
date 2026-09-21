@@ -50,6 +50,7 @@ export const DrawBoard = ({
         let cell;
         cell = (
           <TouchableOpacity
+            key={`${i}-${j}`}
             activeOpacity={isOriginal ? 1 : 0}
             style={styleList}
             onPress={() => {

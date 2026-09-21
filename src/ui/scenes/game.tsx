@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../AppNavigator';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { Game } from '../../domain/entity';
 import { createGame } from '../../domain/service';
@@ -16,15 +16,43 @@ export const GameScreen = ({ route }: Props) => {
   const [selectedCell, setSelectedCell] = useState<number[] | null>(null);
   const [originalBoard, setOriginalBoard] = useState<Board>();
 
-  useEffect(() => {
-    const g = createGame(difficulty);
-    setGame(g);
-    setOriginalBoard(g.board.map(row => [...row]));
+  const startNewGame = useCallback(() => {
+    setTimeout(() => {
+      const g = createGame(difficulty);
+      setGame(g);
+      setOriginalBoard(g.board.map(row => [...row]));
+    }, 0);
   }, [difficulty]);
+
+  useEffect(() => {
+    startNewGame();
+  }, [startNewGame]);
 
   const selectCell = useCallback((cell: number[]) => {
     setSelectedCell(cell);
   }, []);
+
+  const validateGame = useCallback(
+    (board: Board) => {
+      if (!game) return;
+
+      let isCorrect = true;
+      for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[0].length; j++) {
+          if (board[i][j] !== game.solution[i][j]) {
+            isCorrect = false;
+            return;
+          }
+        }
+      }
+
+      if (isCorrect) {
+        startNewGame();
+        Alert.alert('Correct!', 'You won!');
+      }
+    },
+    [game, startNewGame],
+  );
 
   const pressNumber = useCallback(
     (number: number) => {
@@ -35,13 +63,20 @@ export const GameScreen = ({ route }: Props) => {
       const board = game.board.map(r => [...r]);
       board[row][col] = number;
       setGame({ ...game, board });
+
+      validateGame(board);
     },
-    [selectedCell, game],
+    [selectedCell, game, validateGame],
   );
 
   return (
     <View style={styles.container}>
-      {!game && <Text>Creating {difficulty} game...</Text>}
+      {!game && (
+        <View>
+          <ActivityIndicator size="large" />
+          <Text>Creating {difficulty} game...</Text>
+        </View>
+      )}
       {game && originalBoard && (
         <View style={styles.game}>
           <DrawBoard
