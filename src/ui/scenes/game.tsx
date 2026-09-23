@@ -13,6 +13,7 @@ import { Game } from '../../domain/entity';
 import { createGame } from '../../domain/service';
 import { DrawBoard, NumbersButtons } from '../components';
 import { Board } from '../../domain/valueobject';
+import { Timer } from '../components/timer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 
@@ -87,6 +88,7 @@ export const GameScreen = ({ route }: Props) => {
       )}
       {game && originalBoard && (
         <View style={styles.game}>
+          <Timer since={game.created_at} />
           <DrawBoard
             board={game.board}
             originalBoard={originalBoard}
